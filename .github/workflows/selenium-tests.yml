@@ -32,23 +32,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Step 4: Install Chrome and ChromeDriver
-      - name: Install Chrome
-        run: sudo apt-get update && sudo apt-get install -y google-chrome-stable
-
-      - name: Install ChromeDriver
+      # Step 4: Install Chrome and ChromeDriver using apt
+      - name: Install Chrome and ChromeDriver
         run: |
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          CHROMEDRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
-          wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y chromium-chromedriver
 
-      # Step 5: Install Maven dependencies
+      # Step 5: Add ChromeDriver to PATH
+      - name: Add ChromeDriver to PATH
+        run: |
+          export PATH=$PATH:/usr/lib/chromium-browser/
+
+      # Step 6: Install Maven dependencies
       - name: Install dependencies
         run: mvn install
 
-      # Step 6: Run Selenium tests
+      # Step 7: Run Selenium tests
       - name: Run tests
         run: mvn test
